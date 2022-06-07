@@ -4,7 +4,9 @@ declare namespace Express {
    */
   interface Request {
     accessToken?: string;
-    userId?: string;
+    user?: {
+      userId?: number;
+    };
     permissions?: {
       name?: string;
       actions?: string[];

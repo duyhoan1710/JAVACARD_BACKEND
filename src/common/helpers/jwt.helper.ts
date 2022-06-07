@@ -1,19 +1,27 @@
-import jwt from 'jsonwebtoken';
+import {
+  ACCESS_TOKEN_SECRET,
+  ACCESS_TOKEN_EXPIRE,
+  REFRESH_TOKEN_SECRET,
+  REFRESH_TOKEN_EXPIRE,
+} from './../../constants/EnvKey';
+import { ConfigService } from '@nestjs/config';
+import { sign } from 'jsonwebtoken';
 
-import configs from 'common/configs';
-
-export function generateToken(data: any): {
+export function generateToken(
+  data: any,
+  configService: ConfigService,
+): {
   accessToken: string;
   refreshToken: string;
 } {
-  const accessToken = jwt.sign(data, configs.ENV.ACCESS_TOKEN_SECRET, {
+  const accessToken = sign(data, configService.get(ACCESS_TOKEN_SECRET), {
     algorithm: 'HS256',
-    expiresIn: configs.ENV.ACCESS_TOKEN_EXPIRE,
+    expiresIn: configService.get(ACCESS_TOKEN_EXPIRE),
   });
 
-  const refreshToken = jwt.sign(data, configs.ENV.REFRESH_TOKEN_SECRET, {
+  const refreshToken = sign(data, configService.get(REFRESH_TOKEN_SECRET), {
     algorithm: 'HS256',
-    expiresIn: configs.ENV.REFRESH_TOKEN_EXPIRE,
+    expiresIn: configService.get(REFRESH_TOKEN_EXPIRE),
   });
 
   return { accessToken, refreshToken };

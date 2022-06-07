@@ -8,11 +8,30 @@ export class UserEntity extends BaseEntity {
   id: number;
 
   @Column('varchar', { name: 'full_name', nullable: true })
-  fullName?: string;
+  fullName: string;
 
-  @Column('varchar', { name: 'email' })
-  email: string;
+  @Column('varchar', { name: 'verify_code' })
+  verifyCode: string;
 
-  @Column('varchar', { name: 'password' })
-  password: string;
+  @Column('varchar', { name: 'card_number' })
+  cardNumber: string;
+
+  @Column('datetime', { name: 'date_of_birth', nullable: true })
+  dateOfBirth: Date;
+
+  @Column('int', { name: 'gender', nullable: true })
+  gender: number;
+
+  @Column('varchar', { name: 'image', nullable: true })
+  image: string;
+
+  @Column('varchar', { name: 'country', nullable: true })
+  country: string;
+
+  @Column('varchar', { name: 'hometown', nullable: true })
+  hometown: string;
+
+  @Column('varchar', { name: 'address', nullable: true })
+  address: string;
 }
+
