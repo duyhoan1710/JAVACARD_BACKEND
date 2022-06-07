@@ -23,7 +23,6 @@ export class UserController {
   @Get('/profile')
   @UseGuards(JwtGuard)
   getProfile(@Req() req: Request) {
-    console.log(req)
     const userId = req?.user?.userId;
 
     return this.userService.getProfile({ userId });
