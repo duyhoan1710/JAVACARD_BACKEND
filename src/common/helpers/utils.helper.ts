@@ -10,7 +10,7 @@ export function randomString(length = 6) {
 
 export function removeNullProperty(obj) {
   const newObject = Object.keys(obj)
-    .filter((k) => obj[k] != null)
+    .filter((k) => obj[k])
     .reduce((a, k) => ({ ...a, [k]: obj[k] }), {});
   return newObject;
 }

@@ -5,6 +5,7 @@ import {
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserRepository } from '@src/modules/user/user.repository';
+import { removeNullProperty } from '@src/common/helpers/utils.helper';
 
 @Injectable()
 export class UserService {
@@ -42,7 +43,17 @@ export class UserService {
   }) {
     this.userRepository.update(
       { id: userId },
-      { fullName, gender, dateOfBirth, image, country, hometown, address },
+      {
+        ...removeNullProperty({
+          fullName,
+          gender,
+          dateOfBirth,
+          image,
+          country,
+          hometown,
+          address,
+        }),
+      },
     );
   }
 
