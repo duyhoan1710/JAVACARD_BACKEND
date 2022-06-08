@@ -1,10 +1,6 @@
 import { EGender } from './../../common/enums/index';
 import { JwtGuard } from './../../guards/jwt.guard';
-import {
-  UpdateProfileUser,
-  UpdateVerifyCodeDto,
-  RechargeDto,
-} from './dtos/user.dto';
+import { UpdateVerifyCodeDto, RechargeDto } from './dtos/user.dto';
 import { UserService } from './user.service';
 import {
   Body,
@@ -20,7 +16,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express';
 import LocalFilesInterceptor from '@src/interceptors/localFiles.interceptor';
 
 @ApiTags('User')
@@ -80,7 +75,6 @@ export class UserController {
     @Req() req: Request,
     @Body() body,
   ) {
-    console.log(file);
     const userId = req?.user?.userId;
 
     return this.userService.updateProfile({
