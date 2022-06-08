@@ -54,6 +54,8 @@ export class AuthService {
     await this.userRepository.save({
       cardNumber,
       verifyCode,
+      amount: 0,
+      debt: 0,
     });
 
     return { cardNumber, verifyCode };

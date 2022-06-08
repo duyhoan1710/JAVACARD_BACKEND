@@ -1,10 +1,8 @@
 import {
-  USER_NOT_EXIST,
   VERIFY_CODE_INCORRECT,
   MONEY_NOT_ENOUGH,
 } from './../../constants/errorContext';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { FILE_NOT_EXIST } from '@src/constants/errorContext';
 
 import { UserRepository } from '@src/modules/user/user.repository';
 
@@ -26,6 +24,8 @@ export class UserService {
         'hometown',
         'address',
         'cardNumber',
+        'amount',
+        'debt',
       ],
     });
   }
@@ -46,19 +46,37 @@ export class UserService {
     );
   }
 
-  updateVerifyCode({ userId, oldVerifyCode, newVerifyCode }) {
-    this.userRepository.update(
-      { id: userId, verifyCode: oldVerifyCode },
-      { verifyCode: newVerifyCode },
-    );
+  async updateVerifyCode({ userId, oldVerifyCode, newVerifyCode }) {
+    const user = await this.userRepository.findOne({ id: userId });
+
+    if (user && user.verifyCode !== oldVerifyCode) {
+      throw new HttpException(
+        {
+          context: VERIFY_CODE_INCORRECT,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    this.userRepository.save({ ...user, verifyCode: newVerifyCode });
   }
 
-  recharge({ userId, verifyCode, amount }) {
-    this.userRepository.update({ id: userId, verifyCode }, { amount });
+  async recharge({ userId, verifyCode, amount }) {
+    const user = await this.userRepository.findOne({ id: userId });
+
+    if (user && user.verifyCode !== verifyCode) {
+      throw new HttpException(
+        {
+          context: VERIFY_CODE_INCORRECT,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    this.userRepository.save({ ...user, amount: user.amount + amount });
   }
 
   async payBill({ userId, verifyCode }) {
-    const user = await this.userRepository.findOne({ id: userId, verifyCode });
+    const user = await this.userRepository.findOne({ id: userId });
 
     if (user && user.verifyCode !== verifyCode) {
       throw new HttpException(
