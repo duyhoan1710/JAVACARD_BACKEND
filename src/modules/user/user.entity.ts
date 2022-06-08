@@ -33,5 +33,10 @@ export class UserEntity extends BaseEntity {
 
   @Column('varchar', { name: 'address', nullable: true })
   address: string;
-}
 
+  @Column('int', { name: 'amount', nullable: true })
+  amount: number;
+
+  @Column('int', { name: 'debt', nullable: true })
+  debt: number;
+}

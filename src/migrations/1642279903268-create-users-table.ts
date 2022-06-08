@@ -59,6 +59,16 @@ export class createUserTable1642276887991 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'amount',
+            type: 'int',
+            isNullable: true,
+          },
+          {
+            name: 'debt',
+            type: 'int',
+            isNullable: true,
+          },
+          {
             name: 'created_at',
             type: 'datetime',
             default: 'CURRENT_TIMESTAMP',

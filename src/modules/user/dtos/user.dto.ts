@@ -1,7 +1,7 @@
 import { EGender } from './../../../common/enums/index';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @Exclude()
 export class UpdateProfileUser {
@@ -24,10 +24,6 @@ export class UpdateProfileUser {
 
   @ApiPropertyOptional()
   @IsString()
-  image: string;
-
-  @ApiPropertyOptional()
-  @IsString()
   country: string;
 
   @ApiPropertyOptional()
@@ -37,6 +33,10 @@ export class UpdateProfileUser {
   @ApiPropertyOptional()
   @IsString()
   address: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  image: string;
 }
 
 @Exclude()
@@ -52,4 +52,25 @@ export class UpdateVerifyCodeDto {
   @IsNotEmpty()
   @Expose()
   newVerifyCode: string;
+}
+
+@Exclude()
+export class RechargeDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  amount: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  verifyCode: number;
+}
+
+@Exclude()
+export class PayBillDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  verifyCode: number;
 }

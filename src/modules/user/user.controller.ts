@@ -1,5 +1,10 @@
+import { EGender } from './../../common/enums/index';
 import { JwtGuard } from './../../guards/jwt.guard';
-import { UpdateProfileUser, UpdateVerifyCodeDto } from './dtos/user.dto';
+import {
+  UpdateProfileUser,
+  UpdateVerifyCodeDto,
+  RechargeDto,
+} from './dtos/user.dto';
 import { UserService } from './user.service';
 import {
   Body,
@@ -7,12 +12,16 @@ import {
   Get,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import LocalFilesInterceptor from '@src/interceptors/localFiles.interceptor';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -31,10 +40,54 @@ export class UserController {
   @Put()
   @UseGuards(JwtGuard)
   @UsePipes(ValidationPipe)
-  updateProfile(@Req() req: Request, @Body() body: UpdateProfileUser) {
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+        fullName: {
+          type: 'string',
+        },
+        dateOfBirth: {
+          type: 'string',
+        },
+        gender: {
+          enum: Object.values(EGender),
+        },
+        country: {
+          type: 'string',
+        },
+        hometown: {
+          type: 'string',
+        },
+        address: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    LocalFilesInterceptor({
+      fieldName: 'image',
+    }),
+  )
+  updateProfile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+    @Body() body,
+  ) {
+    console.log(file);
     const userId = req?.user?.userId;
 
-    return this.userService.updateProfile({ userId, ...body });
+    return this.userService.updateProfile({
+      userId,
+      ...body,
+      image: file?.originalname,
+    });
   }
 
   @Put('/change-verify-code')
@@ -43,5 +96,21 @@ export class UserController {
     const userId = req?.user?.userId;
 
     return this.userService.updateVerifyCode({ userId, ...body });
+  }
+
+  @Put('/recharge')
+  @UseGuards(JwtGuard)
+  recharge(@Req() req: Request, @Body() body: RechargeDto) {
+    const userId = req?.user?.userId;
+
+    return this.userService.recharge({ userId, ...body });
+  }
+
+  @Put('/pay-bill')
+  @UseGuards(JwtGuard)
+  payBill(@Req() req: Request, @Body() body: RechargeDto) {
+    const userId = req?.user?.userId;
+
+    return this.userService.payBill({ userId, ...body });
   }
 }
