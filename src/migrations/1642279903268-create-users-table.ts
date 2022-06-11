@@ -25,7 +25,7 @@ export class createUserTable1642276887991 implements MigrationInterface {
           },
           {
             name: 'verify_code',
-            type: 'varchar',
+            type: 'longtext',
           },
           {
             name: 'card_number',

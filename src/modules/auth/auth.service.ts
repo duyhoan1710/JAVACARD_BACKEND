@@ -7,8 +7,6 @@ import { generateToken } from '@src/common/helpers/jwt.helper';
 import { AUTH_FAILED } from '../../constants/errorContext';
 import { randomString } from '@src/common/helpers/utils.helper';
 
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import { decryptText, encryptText } from '@src/common/helpers/crypto.helper';
 
 @Injectable()

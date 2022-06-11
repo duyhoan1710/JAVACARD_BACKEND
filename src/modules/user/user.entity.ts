@@ -10,7 +10,7 @@ export class UserEntity extends BaseEntity {
   @Column('varchar', { name: 'full_name', nullable: true })
   fullName: string;
 
-  @Column('varchar', { name: 'verify_code' })
+  @Column('longtext', { name: 'verify_code' })
   verifyCode: string;
 
   @Column('varchar', { name: 'card_number' })
