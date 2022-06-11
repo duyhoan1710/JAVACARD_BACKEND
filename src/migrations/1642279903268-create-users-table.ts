@@ -69,6 +69,11 @@ export class createUserTable1642276887991 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'personal_income',
+            type: 'int',
+            isNullable: true,
+          },
+          {
             name: 'created_at',
             type: 'datetime',
             default: 'CURRENT_TIMESTAMP',

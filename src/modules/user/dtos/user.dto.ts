@@ -37,6 +37,10 @@ export class UpdateProfileUser {
   @ApiPropertyOptional()
   @IsString()
   image: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  personalIncome: number;
 }
 
 @Exclude()

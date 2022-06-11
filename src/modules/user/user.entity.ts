@@ -39,4 +39,7 @@ export class UserEntity extends BaseEntity {
 
   @Column('int', { name: 'debt', nullable: true })
   debt: number;
+
+  @Column('int', { name: 'personal_income', nullable: true })
+  personalIncome: number;
 }

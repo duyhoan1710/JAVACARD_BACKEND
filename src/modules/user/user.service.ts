@@ -6,6 +6,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserRepository } from '@src/modules/user/user.repository';
 import { removeNullProperty } from '@src/common/helpers/utils.helper';
+import { decryptText, encryptText } from '@src/common/helpers/crypto.helper';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,7 @@ export class UserService {
         'cardNumber',
         'amount',
         'debt',
+        'personalIncome',
       ],
     });
   }
@@ -40,6 +42,7 @@ export class UserService {
     country,
     hometown,
     address,
+    personalIncome,
   }) {
     this.userRepository.update(
       { id: userId },
@@ -52,6 +55,7 @@ export class UserService {
           country,
           hometown,
           address,
+          personalIncome,
         }),
       },
     );
@@ -60,7 +64,7 @@ export class UserService {
   async updateVerifyCode({ userId, oldVerifyCode, newVerifyCode }) {
     const user = await this.userRepository.findOne({ id: userId });
 
-    if (user && user.verifyCode !== oldVerifyCode) {
+    if (user && decryptText(user.verifyCode).toString() !== oldVerifyCode) {
       throw new HttpException(
         {
           context: VERIFY_CODE_INCORRECT,
@@ -69,13 +73,16 @@ export class UserService {
       );
     }
 
-    this.userRepository.save({ ...user, verifyCode: newVerifyCode });
+    this.userRepository.save({
+      ...user,
+      verifyCode: encryptText(newVerifyCode).toString('base64'),
+    });
   }
 
   async recharge({ userId, verifyCode, amount }) {
     const user = await this.userRepository.findOne({ id: userId });
 
-    if (user && user.verifyCode !== verifyCode) {
+    if (user && decryptText(user.verifyCode).toString() !== verifyCode) {
       throw new HttpException(
         {
           context: VERIFY_CODE_INCORRECT,
@@ -89,7 +96,7 @@ export class UserService {
   async payBill({ userId, verifyCode }) {
     const user = await this.userRepository.findOne({ id: userId });
 
-    if (user && user.verifyCode !== verifyCode) {
+    if (user && decryptText(user.verifyCode).toString() !== verifyCode) {
       throw new HttpException(
         {
           context: VERIFY_CODE_INCORRECT,

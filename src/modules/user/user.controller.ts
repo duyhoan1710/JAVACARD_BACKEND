@@ -62,6 +62,9 @@ export class UserController {
         address: {
           type: 'string',
         },
+        personalIncome: {
+          type: 'number',
+        },
       },
     },
   })

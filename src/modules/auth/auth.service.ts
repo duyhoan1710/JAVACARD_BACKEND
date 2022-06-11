@@ -7,6 +7,10 @@ import { generateToken } from '@src/common/helpers/jwt.helper';
 import { AUTH_FAILED } from '../../constants/errorContext';
 import { randomString } from '@src/common/helpers/utils.helper';
 
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import { decryptText, encryptText } from '@src/common/helpers/crypto.helper';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -17,7 +21,7 @@ export class AuthService {
   async login({ cardNumber, verifyCode }) {
     const user = await this.userRepository.findOne({ cardNumber });
 
-    if (user && user.verifyCode === verifyCode) {
+    if (user && decryptText(user.verifyCode).toString() === verifyCode) {
       const { accessToken } = generateToken(
         {
           userId: user.id,
@@ -40,7 +44,6 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       cardNumber,
     });
-    const verifyCode = randomString(6);
 
     if (user) {
       throw new HttpException(
@@ -51,13 +54,19 @@ export class AuthService {
       );
     }
 
+    const verifyCode = randomString(6);
+    const encryptedData = encryptText(verifyCode);
+
     await this.userRepository.save({
       cardNumber,
-      verifyCode,
+      verifyCode: encryptedData.toString('base64'),
       amount: 0,
       debt: 0,
     });
 
-    return { cardNumber, verifyCode };
+    return {
+      cardNumber,
+      verifyCode,
+    };
   }
 }
