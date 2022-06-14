@@ -2,7 +2,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Injectable, mixin, NestInterceptor, Type } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { diskStorage } from 'multer';
-
+import * as path from 'path';
 interface LocalFilesInterceptorOptions {
   fieldName: string;
   path?: string;
@@ -21,7 +21,13 @@ function LocalFilesInterceptor(
             return cb(null, `${process.cwd()}/dist/src/uploads`);
           },
           filename: (req, file, cb) => {
-            return cb(null, file.originalname);
+            return cb(
+              null,
+              file.fieldname +
+                '-' +
+                Date.now() +
+                path.extname(file.originalname),
+            );
           },
         }),
       };

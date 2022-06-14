@@ -1,12 +1,43 @@
 import { FileService } from './file.service';
-import { Controller, Get, Req, Res } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiBody, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import LocalFilesInterceptor from '@src/interceptors/localFiles.interceptor';
 
 @ApiTags('File')
 @Controller('files')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
+  @Post()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    LocalFilesInterceptor({
+      fieldName: 'image',
+    }),
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return file.filename;
+  }
 
   @Get(':file')
   @ApiParam({
