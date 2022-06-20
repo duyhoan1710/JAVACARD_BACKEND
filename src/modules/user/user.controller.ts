@@ -1,6 +1,6 @@
 import { EGender } from './../../common/enums/index';
 import { JwtGuard } from './../../guards/jwt.guard';
-import { UpdateVerifyCodeDto, RechargeDto } from './dtos/user.dto';
+import { RechargeDto, UpdateProfileUser } from './dtos/user.dto';
 import { UserService } from './user.service';
 import {
   Body,
@@ -8,11 +8,9 @@ import {
   Get,
   Put,
   Req,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -34,65 +32,74 @@ export class UserController {
 
   @Put()
   @UseGuards(JwtGuard)
-  @UsePipes(ValidationPipe)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        image: {
+        avatarImage: {
+          type: 'string',
+          format: 'binary',
+        },
+        avatarFingerImage: {
           type: 'string',
           format: 'binary',
         },
         fullName: {
           type: 'string',
         },
-        dateOfBirth: {
+        birthday: {
           type: 'string',
         },
-        gender: {
+        sex: {
+          type: 'number',
           enum: Object.values(EGender),
         },
-        country: {
+        national: {
           type: 'string',
         },
-        hometown: {
+        original: {
           type: 'string',
         },
         address: {
           type: 'string',
         },
-        personalIncome: {
-          type: 'number',
+        personalIdentification: {
+          type: 'string',
+        },
+        autoPay: {
+          type: 'boolean',
         },
       },
     },
   })
   @UseInterceptors(
-    LocalFilesInterceptor({
-      fieldName: 'image',
-    }),
+    LocalFilesInterceptor([
+      {
+        name: 'avatarImage',
+      },
+      {
+        name: 'fingerPrintImage',
+      },
+    ]),
   )
   updateProfile(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      avatarImage: Express.Multer.File[];
+      fingerPrintImage: Express.Multer.File[];
+    },
     @Req() req: Request,
-    @Body() body,
+    @Body() body: UpdateProfileUser,
   ) {
     const userId = req?.user?.userId;
 
     return this.userService.updateProfile({
       userId,
       ...body,
-      image: file?.originalname,
+      avatarImage: files?.avatarImage[0]?.originalname,
+      fingerPrintImage: files?.fingerPrintImage[0]?.originalname,
     });
-  }
-
-  @Put('/change-verify-code')
-  @UseGuards(JwtGuard)
-  updatePassword(@Req() req: Request, @Body() body: UpdateVerifyCodeDto) {
-    const userId = req?.user?.userId;
-
-    return this.userService.updateVerifyCode({ userId, ...body });
   }
 
   @Put('/recharge')

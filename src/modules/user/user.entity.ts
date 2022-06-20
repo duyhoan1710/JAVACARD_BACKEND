@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TaxEntity } from './../tax/tax.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseEntity } from '../../common/entities/base.entity';
 
@@ -7,31 +8,31 @@ export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment', { name: 'id' })
   id: number;
 
-  @Column('varchar', { name: 'full_name', nullable: true })
+  @Column('varchar', { name: 'full_name' })
   fullName: string;
 
-  @Column('longtext', { name: 'verify_code' })
-  verifyCode: string;
+  @Column('varchar', { name: 'card_id' })
+  cardId: string;
 
-  @Column('varchar', { name: 'card_number' })
-  cardNumber: string;
+  @Column('datetime', { name: 'birthday' })
+  birthday: Date;
 
-  @Column('datetime', { name: 'date_of_birth', nullable: true })
-  dateOfBirth: Date;
+  @Column('int', { name: 'sex' })
+  sex: number;
 
-  @Column('int', { name: 'gender', nullable: true })
-  gender: number;
+  @Column('varchar', { name: 'avatar_image' })
+  avatarImage: string;
 
-  @Column('varchar', { name: 'image', nullable: true })
-  image: string;
+  @Column('varchar', { name: 'finger_print_image' })
+  fingerPrintImage: string;
 
-  @Column('varchar', { name: 'country', nullable: true })
-  country: string;
+  @Column('varchar', { name: 'national' })
+  national: string;
 
-  @Column('varchar', { name: 'hometown', nullable: true })
-  hometown: string;
+  @Column('varchar', { name: 'original' })
+  original: string;
 
-  @Column('varchar', { name: 'address', nullable: true })
+  @Column('varchar', { name: 'address' })
   address: string;
 
   @Column('int', { name: 'amount', nullable: true })
@@ -40,6 +41,21 @@ export class UserEntity extends BaseEntity {
   @Column('int', { name: 'debt', nullable: true })
   debt: number;
 
-  @Column('int', { name: 'personal_income', nullable: true })
-  personalIncome: number;
+  @Column('varchar', { name: 'personal_identification' })
+  personalIdentification: string;
+
+  @Column('datetime', { name: 'release_date' })
+  releaseDate: Date;
+
+  @Column('datetime', { name: 'expired_date' })
+  expiredDate: Date;
+
+  @Column('longtext', { name: 'public_key' })
+  publicKey: string;
+
+  @Column('boolean', { name: 'auto_pay' })
+  autoPay: boolean;
+
+  @OneToMany(() => TaxEntity, (tax) => tax.user)
+  tax: TaxEntity[];
 }

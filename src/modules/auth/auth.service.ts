@@ -5,9 +5,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '@src/modules/user/user.repository';
 import { generateToken } from '@src/common/helpers/jwt.helper';
 import { AUTH_FAILED } from '../../constants/errorContext';
-import { randomString } from '@src/common/helpers/utils.helper';
 
-import { decryptText, encryptText } from '@src/common/helpers/crypto.helper';
+import { RegisterRequestDto } from './dtos/auth.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -16,18 +16,33 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async login({ cardNumber, verifyCode }) {
-    const user = await this.userRepository.findOne({ cardNumber });
+  async login({ signature, secretMessage }) {
+    const users = await this.userRepository.find();
 
-    if (user && decryptText(user.verifyCode).toString() === verifyCode) {
-      const { accessToken } = generateToken(
+    for (const user of users) {
+      const isVerified = crypto.verify(
+        'sha256',
+        Buffer.from(secretMessage),
         {
-          userId: user.id,
+          key: user.publicKey,
+          padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
         },
-        this.configService,
+        signature,
       );
 
-      return { accessToken };
+      if (isVerified) {
+        const { accessToken } = generateToken(
+          {
+            userId: user.id,
+          },
+          this.configService,
+        );
+
+        return {
+          publicKey: user.publicKey,
+          accessToken,
+        };
+      }
     }
 
     throw new HttpException(
@@ -38,9 +53,17 @@ export class AuthService {
     );
   }
 
-  async register({ cardNumber }) {
+  async register({
+    body,
+    avatarImage,
+    fingerPrintImage,
+  }: {
+    body: RegisterRequestDto;
+    avatarImage: string;
+    fingerPrintImage: string;
+  }) {
     const user = await this.userRepository.findOne({
-      cardNumber,
+      cardId: body.cardId,
     });
 
     if (user) {
@@ -52,19 +75,15 @@ export class AuthService {
       );
     }
 
-    const verifyCode = randomString(6);
-    const encryptedData = encryptText(verifyCode);
-
     await this.userRepository.save({
-      cardNumber,
-      verifyCode: encryptedData.toString('base64'),
-      amount: 0,
-      debt: 0,
+      ...body,
+      avatarImage,
+      fingerPrintImage,
+      autoPay:
+        body.autoPay === 'true' ||
+        body.autoPay === true ||
+        body.autoPay === 1 ||
+        body.autoPay === '1',
     });
-
-    return {
-      cardNumber,
-      verifyCode,
-    };
   }
 }

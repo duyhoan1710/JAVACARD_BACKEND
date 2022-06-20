@@ -19,37 +19,38 @@ export class createUserTable1642276887991 implements MigrationInterface {
             isNullable: true,
           },
           {
-            name: 'date_of_birth',
+            name: 'birthday',
             type: 'datetime',
             isNullable: true,
           },
           {
-            name: 'verify_code',
-            type: 'longtext',
-          },
-          {
-            name: 'card_number',
+            name: 'card_id',
             type: 'varchar',
             isUnique: true,
           },
           {
-            name: 'image',
+            name: 'avatar_image',
             type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'gender',
+            name: 'finger_print_image',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'sex',
             type: 'int',
             length: '1',
             isNullable: true,
           },
           {
-            name: 'country',
+            name: 'national',
             type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'hometown',
+            name: 'original',
             type: 'varchar',
             isNullable: true,
           },
@@ -69,9 +70,26 @@ export class createUserTable1642276887991 implements MigrationInterface {
             isNullable: true,
           },
           {
-            name: 'personal_income',
-            type: 'int',
+            name: 'personal_identification',
+            type: 'varchar',
             isNullable: true,
+          },
+          {
+            name: 'release_date',
+            type: 'datetime',
+            default: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'expired_date',
+            type: 'datetime',
+          },
+          {
+            name: 'auto_pay',
+            type: 'boolean',
+          },
+          {
+            name: 'public_key',
+            type: 'longtext',
           },
           {
             name: 'created_at',

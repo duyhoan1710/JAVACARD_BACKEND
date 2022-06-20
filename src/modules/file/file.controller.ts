@@ -31,12 +31,14 @@ export class FileController {
     },
   })
   @UseInterceptors(
-    LocalFilesInterceptor({
-      fieldName: 'image',
-    }),
+    LocalFilesInterceptor([
+      {
+        name: 'image',
+      },
+    ]),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return file.filename;
+  uploadFile(@UploadedFile() files: { image: Express.Multer.File }) {
+    return files?.image[0]?.filename;
   }
 
   @Get(':file')

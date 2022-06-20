@@ -5,42 +5,47 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @Exclude()
 export class UpdateProfileUser {
-  @ApiPropertyOptional()
-  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
   @Expose()
   fullName: string;
 
-  @ApiPropertyOptional()
-  @IsDate()
+  @ApiProperty()
+  @IsNotEmpty()
   @Expose()
-  dateOfBirth: Date;
+  birthday: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     enum: EGender,
     default: EGender.FEMALE,
     examples: EGender,
   })
-  gender: EGender;
+  sex: EGender;
 
-  @ApiPropertyOptional()
-  @IsString()
-  country: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Expose()
+  national: string;
 
-  @ApiPropertyOptional()
-  @IsString()
-  hometown: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Expose()
+  original: string;
 
-  @ApiPropertyOptional()
-  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  @Expose()
   address: string;
 
-  @ApiPropertyOptional()
-  @IsString()
-  image: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Expose()
+  personalIdentification: string;
 
-  @ApiPropertyOptional()
-  @IsNumber()
-  personalIncome: number;
+  @ApiProperty()
+  @IsNotEmpty()
+  @Expose()
+  autoPay: any;
 }
 
 @Exclude()
@@ -64,17 +69,7 @@ export class RechargeDto {
   @IsNumber()
   @IsNotEmpty()
   amount: number;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  verifyCode: number;
 }
 
 @Exclude()
-export class PayBillDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  verifyCode: number;
-}
+export class PayBillDto {}

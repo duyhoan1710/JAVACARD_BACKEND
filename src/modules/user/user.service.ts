@@ -1,12 +1,8 @@
-import {
-  VERIFY_CODE_INCORRECT,
-  MONEY_NOT_ENOUGH,
-} from './../../constants/errorContext';
+import { MONEY_NOT_ENOUGH } from './../../constants/errorContext';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserRepository } from '@src/modules/user/user.repository';
 import { removeNullProperty } from '@src/common/helpers/utils.helper';
-import { decryptText, encryptText } from '@src/common/helpers/crypto.helper';
 
 @Injectable()
 export class UserService {
@@ -18,17 +14,22 @@ export class UserService {
         id: userId,
       },
       select: [
+        'id',
         'fullName',
-        'gender',
-        'image',
-        'dateOfBirth',
-        'country',
-        'hometown',
+        'sex',
+        'avatarImage',
+        'fingerPrintImage',
+        'birthday',
+        'national',
+        'original',
         'address',
-        'cardNumber',
+        'cardId',
         'amount',
         'debt',
-        'personalIncome',
+        'personalIdentification',
+        'expiredDate',
+        'releaseDate',
+        'autoPay',
       ],
     });
   }
@@ -36,74 +37,47 @@ export class UserService {
   updateProfile({
     userId,
     fullName,
-    dateOfBirth,
-    gender,
-    image,
-    country,
-    hometown,
+    birthday,
+    sex,
+    avatarImage,
+    fingerPrintImage,
+    national,
+    original,
     address,
-    personalIncome,
+    personalIdentification,
+    autoPay,
   }) {
     this.userRepository.update(
       { id: userId },
       {
         ...removeNullProperty({
           fullName,
-          gender,
-          dateOfBirth,
-          image,
-          country,
-          hometown,
+          birthday,
+          sex,
+          avatarImage,
+          fingerPrintImage,
+          national,
+          original,
           address,
-          personalIncome,
+          personalIdentification,
+          autoPay:
+            autoPay === 'true' ||
+            autoPay === true ||
+            autoPay === 1 ||
+            autoPay === '1',
         }),
       },
     );
   }
 
-  async updateVerifyCode({ userId, oldVerifyCode, newVerifyCode }) {
+  async recharge({ userId, amount }) {
     const user = await this.userRepository.findOne({ id: userId });
 
-    if (user && decryptText(user.verifyCode).toString() !== oldVerifyCode) {
-      throw new HttpException(
-        {
-          context: VERIFY_CODE_INCORRECT,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    this.userRepository.save({
-      ...user,
-      verifyCode: encryptText(newVerifyCode).toString('base64'),
-    });
-  }
-
-  async recharge({ userId, verifyCode, amount }) {
-    const user = await this.userRepository.findOne({ id: userId });
-
-    if (user && decryptText(user.verifyCode).toString() !== verifyCode) {
-      throw new HttpException(
-        {
-          context: VERIFY_CODE_INCORRECT,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     this.userRepository.save({ ...user, amount: user.amount + amount });
   }
 
-  async payBill({ userId, verifyCode }) {
+  async payBill({ userId }) {
     const user = await this.userRepository.findOne({ id: userId });
-
-    if (user && decryptText(user.verifyCode).toString() !== verifyCode) {
-      throw new HttpException(
-        {
-          context: VERIFY_CODE_INCORRECT,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     if (user && user.amount < user.debt) {
       throw new HttpException(
