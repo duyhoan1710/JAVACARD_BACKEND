@@ -1,7 +1,9 @@
+import { PaymentHistoryEntity } from './../taxHistory/entity/paymentHistory.entity';
 import { TaxEntity } from './../tax/tax.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseEntity } from '../../common/entities/base.entity';
+import { TaxHistoryEntity } from '../taxHistory/entity/taxHistory.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -58,4 +60,13 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => TaxEntity, (tax) => tax.user)
   tax: TaxEntity[];
+
+  @OneToMany(() => TaxHistoryEntity, (taxHistory) => taxHistory.user)
+  taxHistory: TaxHistoryEntity[];
+
+  @OneToMany(
+    () => PaymentHistoryEntity,
+    (paymentHistory) => paymentHistory.user,
+  )
+  paymentHistory: PaymentHistoryEntity[];
 }
