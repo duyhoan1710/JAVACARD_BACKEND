@@ -1,3 +1,4 @@
+import { TaxRepository } from './../tax/tax.repository';
 import { UserRepository } from './../user/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentHistoryRepository } from './../taxHistory/repository/paymentHistory.repository';
@@ -10,6 +11,7 @@ const repository = [
   TaxHistoryRepository,
   PaymentHistoryRepository,
   UserRepository,
+  TaxRepository,
 ];
 
 @Module({

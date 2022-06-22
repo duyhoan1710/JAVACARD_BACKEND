@@ -9,7 +9,7 @@ import {
 
 import { BaseEntity } from '../../../common/entities/base.entity';
 
-@Entity({ name: 'tax' })
+@Entity({ name: 'payment_history' })
 export class PaymentHistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment', { name: 'id' })
   id: number;

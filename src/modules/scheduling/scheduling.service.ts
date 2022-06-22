@@ -1,3 +1,4 @@
+import { TaxRepository } from './../tax/tax.repository';
 import { UserRepository } from './../user/user.repository';
 import { PaymentHistoryRepository } from './../taxHistory/repository/paymentHistory.repository';
 import { TaxHistoryRepository } from './../taxHistory/repository/taxHistory.repository';
@@ -10,9 +11,10 @@ export class SchedulingService {
     private readonly taxHistoryRepository: TaxHistoryRepository,
     private readonly paymentHistoryRepository: PaymentHistoryRepository,
     private readonly userRepository: UserRepository,
+    private readonly taxRepository: TaxRepository,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
     const users = await this.userRepository.find();
 
@@ -20,7 +22,7 @@ export class SchedulingService {
     const newPaymentHistory = [];
 
     for (const user of users) {
-      const tax = await this.taxHistoryRepository
+      const tax = await this.taxRepository
         .createQueryBuilder('tax')
         .where('tax.user_id = :userId', { userId: user.id })
         .orderBy('id', 'DESC')
@@ -28,18 +30,27 @@ export class SchedulingService {
 
       if (!tax) continue;
 
+      await this.taxHistoryRepository.save({
+        userId: user.id,
+        personalIncome: tax.personalIncome,
+        deduction: tax.deduction,
+        insuranceDeduction: tax.insuranceDeduction,
+        totalTax: tax.totalTax,
+      });
+
       user.debt = user.debt + tax.totalTax;
 
-      if (user.autoPay) {
+      if (user.autoPay && user.debt) {
         if (user.amount >= user.debt) {
-          user.debt = 0;
-          user.amount = user.amount - user.debt;
           newPaymentHistory.push({
             userId: user.id,
             totalTax: user.debt,
             status: true,
             message: 'Payment Success',
           });
+
+          user.amount = user.amount - user.debt;
+          user.debt = 0;
         } else {
           newPaymentHistory.push({
             userId: user.id,
