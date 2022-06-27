@@ -16,6 +16,9 @@ export class UserEntity extends BaseEntity {
   @Column('varchar', { name: 'card_id' })
   cardId: string;
 
+  @Column('varchar', { name: 'identification_id' })
+  identificationId: string;
+
   @Column('datetime', { name: 'birthday' })
   birthday: Date;
 

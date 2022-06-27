@@ -13,23 +13,23 @@ export class TaxService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  create({ body, userId }: { body: CreateTaxDto; userId: number }) {
+  create({ body, identificationId }: { body: CreateTaxDto; identificationId }) {
     this.taxRepository.save({
       ...body,
-      userId,
+      identificationId,
     });
 
     this.taxHistoryRepository.save({
       ...body,
-      userId: userId,
+      identificationId: identificationId,
     });
 
-    this.userRepository.update({ id: userId }, { debt: body.totalTax });
+    this.userRepository.update({ identificationId }, { debt: body.totalTax });
   }
 
-  getList({ userId }) {
-    this.taxRepository.find({
-      userId,
+  getList({ identificationId }) {
+    return this.taxRepository.find({
+      identificationId,
     });
   }
 }

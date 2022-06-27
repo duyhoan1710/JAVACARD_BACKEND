@@ -9,11 +9,11 @@ export class TaxHistoryService {
     private readonly paymentHistoryRepository: PaymentHistoryRepository,
   ) {}
 
-  getListPaymentHistory({ userId }) {
-    return this.paymentHistoryRepository.find({ userId });
+  getListPaymentHistory({ identificationId }) {
+    return this.paymentHistoryRepository.find({ identificationId });
   }
 
-  getListTaxHistory({ userId }) {
-    return this.taxHistoryRepository.find({ userId });
+  getListTaxHistory({ identificationId }) {
+    return this.taxHistoryRepository.find({ identificationId });
   }
 }

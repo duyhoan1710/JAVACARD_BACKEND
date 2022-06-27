@@ -14,8 +14,8 @@ export class PaymentHistoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment', { name: 'id' })
   id: number;
 
-  @Column('int', { name: 'user_id' })
-  userId: number;
+  @Column('varchar', { name: 'identification_id' })
+  identificationId: string;
 
   @Column('int', { name: 'status' })
   status: boolean;
@@ -27,6 +27,6 @@ export class PaymentHistoryEntity extends BaseEntity {
   totalTax: number;
 
   @ManyToOne(() => UserEntity, (user) => user.tax)
-  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'identification_id', referencedColumnName: 'id' })
   user: UserEntity;
 }

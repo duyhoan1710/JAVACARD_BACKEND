@@ -1,4 +1,4 @@
-import { MONEY_NOT_ENOUGH } from './../../constants/errorContext';
+import { AUTH_FAILED, MONEY_NOT_ENOUGH, USER_NOT_EXIST } from './../../constants/errorContext';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserRepository } from '@src/modules/user/user.repository';
@@ -12,10 +12,10 @@ export class UserService {
     private readonly paymentHistoryRepository: PaymentHistoryRepository,
   ) {}
 
-  getProfile({ userId }) {
-    return this.userRepository.findOne({
+  async getProfile({ identificationId }) {
+    const user = await this.userRepository.findOne({
       where: {
-        id: userId,
+        identificationId,
       },
       select: [
         'id',
@@ -34,12 +34,24 @@ export class UserService {
         'expiredDate',
         'releaseDate',
         'autoPay',
+        'identificationId',
       ],
     });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          context: USER_NOT_EXIST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return user;
   }
 
   updateProfile({
-    userId,
+    identificationId,
     fullName,
     birthday,
     sex,
@@ -52,7 +64,7 @@ export class UserService {
     autoPay,
   }) {
     this.userRepository.update(
-      { id: userId },
+      { identificationId },
       {
         ...removeNullProperty({
           fullName,
@@ -74,24 +86,33 @@ export class UserService {
     );
   }
 
-  async recharge({ userId, amount }) {
-    const user = await this.userRepository.findOne({ id: userId });
+  async recharge({ identificationId, amount, signature }) {
+    if (signature !== process.env.SIGNATURE) {
+      throw new HttpException(
+        {
+          context: AUTH_FAILED,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const user = await this.userRepository.findOne({ identificationId });
 
     this.userRepository.save({ ...user, amount: user.amount + amount });
     this.paymentHistoryRepository.save({
-      userId: userId,
+      identificationId: identificationId,
       totalTax: amount,
       status: true,
       message: 'Recharge Success',
     });
   }
 
-  async payBill({ userId }) {
-    const user = await this.userRepository.findOne({ id: userId });
+  async payBill({ identificationId }) {
+    const user = await this.userRepository.findOne({ identificationId });
 
     if (user && user.amount < user.debt) {
       this.paymentHistoryRepository.save({
-        userId: userId,
+        identificationId: identificationId,
         totalTax: user.debt,
         status: false,
         message: 'Not Enough Money In Wallet',
@@ -111,8 +132,8 @@ export class UserService {
       debt: 0,
     });
 
-    this.paymentHistoryRepository.save({
-      userId: userId,
+    await this.paymentHistoryRepository.save({
+      identificationId: identificationId,
       totalTax: user.debt,
       status: true,
       message: 'Payment Success',

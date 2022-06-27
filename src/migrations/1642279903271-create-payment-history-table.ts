@@ -16,7 +16,7 @@ export class createPaymentHistoryTable1642276887991
             generationStrategy: 'increment',
           },
           {
-            name: 'user_id',
+            name: 'identification_id',
             type: 'int',
           },
           {

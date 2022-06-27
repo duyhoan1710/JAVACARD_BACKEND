@@ -28,9 +28,8 @@ export enum ECensorshipStatus {
 }
 
 export enum EGender {
-  MALE = 1,
-  FEMALE = 2,
-  OTHER = 3,
+  MALE = 0,
+  FEMALE = 1,
 }
 
 export enum ESortType {

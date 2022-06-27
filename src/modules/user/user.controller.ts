@@ -1,3 +1,4 @@
+import { QueryUserDto } from './../../common/dto/index';
 import { EGender } from './../../common/enums/index';
 import { JwtGuard } from './../../guards/jwt.guard';
 import { RechargeDto, UpdateProfileUser } from './dtos/user.dto';
@@ -7,6 +8,7 @@ import {
   Controller,
   Get,
   Put,
+  Query,
   Req,
   UploadedFiles,
   UseGuards,
@@ -17,21 +19,17 @@ import { Request } from 'express';
 import LocalFilesInterceptor from '@src/interceptors/localFiles.interceptor';
 
 @ApiTags('User')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('/profile')
-  @UseGuards(JwtGuard)
-  getProfile(@Req() req: Request) {
-    const userId = req?.user?.userId;
-
-    return this.userService.getProfile({ userId });
+  getProfile(@Req() req: Request, @Query() { identificationId }: QueryUserDto) {
+    return this.userService.getProfile({ identificationId });
   }
 
   @Put()
-  @UseGuards(JwtGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -91,30 +89,29 @@ export class UserController {
     },
     @Req() req: Request,
     @Body() body: UpdateProfileUser,
+    @Query() { identificationId }: QueryUserDto,
   ) {
-    const userId = req?.user?.userId;
-
     return this.userService.updateProfile({
-      userId,
+      identificationId,
       ...body,
-      avatarImage: files?.avatarImage[0]?.originalname,
-      fingerPrintImage: files?.fingerPrintImage[0]?.originalname,
+      avatarImage: !!files?.avatarImage?.length
+        ? files?.avatarImage[0]?.originalname
+        : null,
+      fingerPrintImage: !!files?.fingerPrintImage?.length
+        ? files?.fingerPrintImage[0]?.originalname
+        : null,
     });
   }
 
   @Put('/recharge')
-  @UseGuards(JwtGuard)
   recharge(@Req() req: Request, @Body() body: RechargeDto) {
-    const userId = req?.user?.userId;
+    const { comment } = body;
 
-    return this.userService.recharge({ userId, ...body });
+    return this.userService.recharge({ identificationId: comment, ...body });
   }
 
   @Put('/pay-bill')
-  @UseGuards(JwtGuard)
-  payBill(@Req() req: Request, @Body() body: RechargeDto) {
-    const userId = req?.user?.userId;
-
-    return this.userService.payBill({ userId, ...body });
+  payBill(@Req() req: Request, @Query() { identificationId }: QueryUserDto) {
+    return this.userService.payBill({ identificationId });
   }
 }

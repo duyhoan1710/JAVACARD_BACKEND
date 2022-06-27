@@ -14,7 +14,7 @@ export class SchedulingService {
     private readonly taxRepository: TaxRepository,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCron() {
     const users = await this.userRepository.find();
 
@@ -24,14 +24,16 @@ export class SchedulingService {
     for (const user of users) {
       const tax = await this.taxRepository
         .createQueryBuilder('tax')
-        .where('tax.user_id = :userId', { userId: user.id })
+        .where('tax.identification_id = :identificationId', {
+          identificationId: user.identificationId,
+        })
         .orderBy('id', 'DESC')
         .getOne();
 
       if (!tax) continue;
 
       await this.taxHistoryRepository.save({
-        userId: user.id,
+        identificationId: user.identificationId,
         personalIncome: tax.personalIncome,
         deduction: tax.deduction,
         insuranceDeduction: tax.insuranceDeduction,
@@ -43,7 +45,7 @@ export class SchedulingService {
       if (user.autoPay && user.debt) {
         if (user.amount >= user.debt) {
           newPaymentHistory.push({
-            userId: user.id,
+            identificationId: user.identificationId,
             totalTax: user.debt,
             status: true,
             message: 'Payment Success',
@@ -53,7 +55,7 @@ export class SchedulingService {
           user.debt = 0;
         } else {
           newPaymentHistory.push({
-            userId: user.id,
+            identificationId: user.identificationId,
             totalTax: user.debt,
             status: false,
             message: 'Not Enough Money In Wallet',

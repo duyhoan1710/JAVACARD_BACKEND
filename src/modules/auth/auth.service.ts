@@ -8,6 +8,10 @@ import { AUTH_FAILED } from '../../constants/errorContext';
 
 import { RegisterRequestDto } from './dtos/auth.dto';
 import * as crypto from 'crypto';
+import {
+  getAddressNumber,
+  randomString,
+} from '@src/common/helpers/utils.helper';
 
 @Injectable()
 export class AuthService {
@@ -75,10 +79,28 @@ export class AuthService {
       );
     }
 
+    const addessId = getAddressNumber(body.original);
+
+    if (!addessId) {
+      throw new HttpException(
+        {
+          content: 'ORIGIN_NOT_FOUND',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const last2NumberOfYear = new Date(body.birthday)
+      .getFullYear()
+      .toString()
+      .slice(-2);
+    const randomText = randomString(6);
+
     await this.userRepository.save({
       ...body,
       avatarImage,
       fingerPrintImage,
+      identificationId: `${addessId}${body.sex}${last2NumberOfYear}${randomText}`,
       autoPay:
         body.autoPay === 'true' ||
         body.autoPay === true ||

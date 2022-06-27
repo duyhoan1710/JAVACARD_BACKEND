@@ -14,7 +14,7 @@ export class createTaxHistoryTable1642276887991 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'user_id',
+            name: 'identification_id',
             type: 'int',
           },
           {

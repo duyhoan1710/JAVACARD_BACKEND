@@ -66,9 +66,44 @@ export class UpdateVerifyCodeDto {
 @Exclude()
 export class RechargeDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  signature: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  amount: number;
+  tranId: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  ackTime: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  partnerId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  partnerName: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  amount: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  comment: string;
 }
 
 @Exclude()

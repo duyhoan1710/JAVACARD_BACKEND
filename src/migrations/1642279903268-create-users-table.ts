@@ -29,6 +29,11 @@ export class createUserTable1642276887991 implements MigrationInterface {
             isUnique: true,
           },
           {
+            name: 'identification_id',
+            type: 'varchar',
+            isUnique: true,
+          },
+          {
             name: 'avatar_image',
             type: 'varchar',
             isNullable: true,
