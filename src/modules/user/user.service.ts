@@ -1,4 +1,8 @@
-import { AUTH_FAILED, MONEY_NOT_ENOUGH, USER_NOT_EXIST } from './../../constants/errorContext';
+import {
+  AUTH_FAILED,
+  MONEY_NOT_ENOUGH,
+  USER_NOT_EXIST,
+} from './../../constants/errorContext';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { UserRepository } from '@src/modules/user/user.repository';
