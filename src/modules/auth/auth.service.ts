@@ -96,16 +96,19 @@ export class AuthService {
       .slice(-2);
     const randomText = randomString(6);
 
+    const identificationId = `${addessId}${body.sex}${last2NumberOfYear}${randomText}`;
     await this.userRepository.save({
       ...body,
       avatarImage,
       fingerPrintImage,
-      identificationId: `${addessId}${body.sex}${last2NumberOfYear}${randomText}`,
+      identificationId,
       autoPay:
         body.autoPay === 'true' ||
         body.autoPay === true ||
         body.autoPay === 1 ||
         body.autoPay === '1',
     });
+
+    return { identificationId };
   }
 }
