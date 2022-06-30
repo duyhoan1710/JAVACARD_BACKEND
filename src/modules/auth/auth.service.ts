@@ -25,11 +25,10 @@ export class AuthService {
 
     for (const user of users) {
       const isVerified = crypto.verify(
-        'sha256',
+        'sha1',
         Buffer.from(secretMessage),
         {
           key: user.publicKey,
-          padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
         },
         signature,
       );

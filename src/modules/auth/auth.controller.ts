@@ -19,11 +19,11 @@ import { LoginRequestDto, RegisterRequestDto } from './dtos/auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('login')
-  // @UsePipes(ValidationPipe)
-  // login(@Body() body: LoginRequestDto) {
-  //   return this.authService.login(body);
-  // }
+  @Post('login')
+  @UsePipes(ValidationPipe)
+  login(@Body() body: LoginRequestDto) {
+    return this.authService.login(body);
+  }
 
   @Post('register')
   @UsePipes(ValidationPipe)
