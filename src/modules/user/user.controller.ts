@@ -7,6 +7,7 @@ import {
   Body,
   Controller,
   Get,
+  Post,
   Put,
   Query,
   Req,
@@ -103,7 +104,7 @@ export class UserController {
     });
   }
 
-  @Put('/recharge')
+  @Post('/recharge')
   recharge(@Req() req: Request, @Body() body: RechargeDto) {
     const { comment } = body;
 
