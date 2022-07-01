@@ -96,9 +96,9 @@ export class RechargeDto {
   partnerName: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  amount: string;
+  amount: number;
 
   @ApiProperty()
   @IsString()
