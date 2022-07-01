@@ -106,7 +106,10 @@ export class UserService {
       return;
     }
 
-    this.userRepository.save({ ...user, amount: user.amount + amount });
+    this.userRepository.save({
+      ...user,
+      amount: Number(user.amount) + Number(amount),
+    });
     this.paymentHistoryRepository.save({
       identificationId: identificationId,
       totalTax: amount,
