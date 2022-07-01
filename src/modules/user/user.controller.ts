@@ -11,12 +11,13 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import LocalFilesInterceptor from '@src/interceptors/localFiles.interceptor';
 
 @ApiTags('User')
@@ -105,10 +106,16 @@ export class UserController {
   }
 
   @Post('/recharge')
-  recharge(@Req() req: Request, @Body() body: RechargeDto) {
+  recharge(
+    @Req() req: Request,
+    @Body() body: RechargeDto,
+    @Res() res: Response,
+  ) {
     const { comment } = body;
 
-    return this.userService.recharge({ identificationId: comment, ...body });
+    this.userService.recharge({ identificationId: comment, ...body });
+
+    res.status(200).json();
   }
 
   @Put('/pay-bill')
