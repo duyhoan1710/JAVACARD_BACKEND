@@ -24,14 +24,9 @@ export class AuthService {
     const users = await this.userRepository.find();
 
     for (const user of users) {
-      const isVerified = crypto.verify(
-        'sha1',
-        Buffer.from(secretMessage),
-        {
-          key: user.publicKey,
-        },
-        signature,
-      );
+      const verifier = crypto.createVerify('sha1');
+      verifier.update(secretMessage);
+      const isVerified = verifier.verify(user.publicKey, signature, 'base64');
 
       if (isVerified) {
         const { accessToken } = generateToken(
