@@ -102,6 +102,10 @@ export class UserService {
 
     const user = await this.userRepository.findOne({ identificationId });
 
+    if (!user) {
+      return;
+    }
+
     this.userRepository.save({ ...user, amount: user.amount + amount });
     this.paymentHistoryRepository.save({
       identificationId: identificationId,
