@@ -88,9 +88,19 @@ export class AuthService {
       .getFullYear()
       .toString()
       .slice(-2);
-    const randomText = randomString(6);
 
-    const identificationId = `${addessId}${body.sex}${last2NumberOfYear}${randomText}`;
+    let identificationId;
+
+    while (true) {
+      const randomText = randomString(6);
+
+      identificationId = `${addessId}${body.sex}${last2NumberOfYear}${randomText}`;
+
+      const user = await this.userRepository.findOne({ identificationId });
+
+      if (!user) break;
+    }
+
     await this.userRepository.save({
       ...body,
       avatarImage,
